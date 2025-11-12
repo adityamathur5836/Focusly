@@ -1,22 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserById } from "../lib/api"; // fetches user data securely
+import { getUserById } from "../lib/api";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Logout function
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     navigate("/login");
   };
 
-  // Fetch dynamic user data from backend
   useEffect(() => {
-    async function fetchUserData() {
+    async function fetchData() {
       const token = localStorage.getItem("token");
       const userId = localStorage.getItem("userId");
 
@@ -28,41 +26,62 @@ export default function Dashboard() {
       try {
         const data = await getUserById(userId);
         setUserData(data);
-      } catch (err) {
-        console.error("Error fetching user data:", err);
+      } catch (error) {
+        console.error("Error fetching user:", error);
         navigate("/login");
       } finally {
         setLoading(false);
       }
     }
-
-    fetchUserData();
+    fetchData();
   }, [navigate]);
 
-  if (loading) return <div className="text-white p-10">Loading dashboard...</div>;
-  if (!userData) return null;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-300 text-lg">
+        Loading your dashboard...
+      </div>
+    );
+
+  if (!userData)
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-300 text-lg">
+        Failed to load data. Please login again.
+      </div>
+    );
 
   const { name, stats, recent } = userData;
 
   return (
     <div className="min-h-screen bg-[#0B0B14] text-gray-100 font-inter flex">
 
-      {/* ------------ Sidebar ------------ */}
       <aside className="w-64 bg-[#111122] border-r border-[#1E1E2F] flex flex-col">
         <div className="px-6 py-5 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600" />
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+            F
+          </div>
           <span className="text-xl font-bold tracking-tight">Focusly</span>
         </div>
 
         <nav className="px-4 flex-1">
           <div className="text-xs uppercase text-gray-500 mb-3 px-2">Study</div>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-600/20 text-blue-300">Dashboard</a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 mt-1 rounded-lg hover:bg-[#1E1E2F] transition">Notes</a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 mt-1 rounded-lg hover:bg-[#1E1E2F] transition">Flashcards</a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 mt-1 rounded-lg hover:bg-[#1E1E2F] transition">Voice Room</a>
+          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-600/20 text-blue-300">
+            Dashboard
+          </a>
+          <a href="#" className="flex items-center gap-3 px-3 py-2 mt-1 rounded-lg hover:bg-[#1E1E2F] transition">
+            Notes
+          </a>
+          <a href="#" className="flex items-center gap-3 px-3 py-2 mt-1 rounded-lg hover:bg-[#1E1E2F] transition">
+            Flashcards
+          </a>
+          <a href="#" className="flex items-center gap-3 px-3 py-2 mt-1 rounded-lg hover:bg-[#1E1E2F] transition">
+            Voice Room
+          </a>
 
           <div className="text-xs uppercase text-gray-500 mt-8 mb-3 px-2">Account</div>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#1E1E2F] transition">Settings</a>
+          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#1E1E2F] transition">
+            Settings
+          </a>
           <button
             onClick={handleLogout}
             className="w-full text-left flex items-center gap-3 px-3 py-2 mt-1 rounded-lg hover:bg-red-900/30 text-red-400 transition"
@@ -73,8 +92,8 @@ export default function Dashboard() {
 
         <div className="p-4">
           <div className="bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl p-4 text-sm">
-            <div className="font-semibold mb-1">Pro</div>
-            <div className="text-gray-200 opacity-90">Unlock unlimited AI tools</div>
+            <div className="font-semibold mb-1">Pro Access</div>
+            <div className="text-gray-200 opacity-90">Unlock unlimited AI features</div>
             <button className="mt-3 px-3 py-1.5 bg-white/10 rounded-lg text-xs hover:bg-white/20 transition">
               Upgrade
             </button>
@@ -82,13 +101,12 @@ export default function Dashboard() {
         </div>
       </aside>
 
-      {/* ------------ Main Content ------------ */}
       <main className="flex-1 overflow-auto">
-        <header className="px-10 pt-8 pb-4 flex items-center justify-between">
+        <header className="px-10 pt-8 pb-4 flex items-center justify-between border-b border-[#1E1E2F]">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, {name} 👋</h1>
+            <h1 className="text-3xl font-bold">Welcome back, {name}</h1>
             <p className="text-gray-400 mt-1">
-              Your AI study cockpit — stay focused, track progress, and grow daily.
+              Here’s your personalized AI learning overview — stay focused and grow daily.
             </p>
           </div>
           <div className="flex items-center gap-4">
@@ -103,15 +121,16 @@ export default function Dashboard() {
           </div>
         </header>
 
-        {/* ------------ Stats Cards ------------ */}
-        <section className="px-10 grid grid-cols-3 gap-6">
+        {/* Stats Section */}
+        <section className="px-10 py-8 grid grid-cols-3 gap-6">
           <div className="bg-[#111122] border border-[#1E1E2F] rounded-xl p-5 hover:border-blue-500 transition">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-gray-400 text-sm">Notes Created</div>
-                <div className="text-3xl font-bold mt-1 text-blue-400">{stats.notes}</div>
+                <div className="text-3xl font-bold mt-1 text-blue-400">
+                  {stats?.notes || 0}
+                </div>
               </div>
-              <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center text-2xl">📄</div>
             </div>
           </div>
 
@@ -119,9 +138,10 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-gray-400 text-sm">Flashcards Reviewed</div>
-                <div className="text-3xl font-bold mt-1 text-purple-400">{stats.flashcards}</div>
+                <div className="text-3xl font-bold mt-1 text-purple-400">
+                  {stats?.flashcards || 0}
+                </div>
               </div>
-              <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center text-2xl">📇</div>
             </div>
           </div>
 
@@ -129,15 +149,16 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-gray-400 text-sm">Voice Sessions</div>
-                <div className="text-3xl font-bold mt-1 text-cyan-400">{stats.voices}</div>
+                <div className="text-3xl font-bold mt-1 text-cyan-400">
+                  {stats?.voices || 0}
+                </div>
               </div>
-              <div className="w-12 h-12 rounded-lg bg-cyan-500/10 flex items-center justify-center text-2xl">🎙️</div>
             </div>
           </div>
         </section>
 
-        {/* ------------ Recent Activity ------------ */}
-        <section className="px-10 mt-10 pb-10">
+        {/* Recent Activity Section */}
+        <section className="px-10 pb-10">
           <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
           <div className="bg-[#111122] border border-[#1E1E2F] rounded-xl divide-y divide-[#1E1E2F]">
             {recent && recent.length > 0 ? (
@@ -171,7 +192,9 @@ export default function Dashboard() {
                 </div>
               ))
             ) : (
-              <div className="px-5 py-6 text-gray-500 text-center">No recent activity yet.</div>
+              <div className="px-5 py-6 text-gray-500 text-center">
+                No recent activity found.
+              </div>
             )}
           </div>
         </section>

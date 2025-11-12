@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../lib/api";
-import "../index.css";
+import '../index.css'
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,11 +17,13 @@ export default function Login() {
       setError("");
       const res = await loginUser(email, password);
 
-      // ✅ Store token + redirect
+      // Save token + user info
       localStorage.setItem("token", res.token);
+      localStorage.setItem("userId", res.user.id);
+
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -30,44 +32,41 @@ export default function Login() {
   return (
     <div className="flex min-h-screen text-white">
       {/* Left Side */}
-      <div className="hidden md:flex w-1/2 flex-col justify-center items-center bg-gradient-to-br from-[#0F0C29] via-[#302B63] to-[#24243E] p-12">
-        <div className="text-center space-y-4">
-          <div className="text-4xl font-bold text-blue-500">Focusly</div>
-          <p className="text-gray-300 max-w-md mx-auto">
-            Connecting your workflow seamlessly — The ultimate AI-driven study system.
-          </p>
-        </div>
+      <div className="hidden md:flex w-1/2 flex-col justify-center items-center bg-gradient-to-br from-[#0F0C29] via-[#302B63] to-[#24243E] relative overflow-hidden">
+        <img
+          src="https://cdni.iconscout.com/illustration/premium/thumb/secure-login-concept-illustration-download-in-svg-png-gif-file-formats--safety-data-lock-technology-cybersecurity-pack-security-illustrations-5264989.png?f=webp"
+          alt="Secure login illustration"
+          className="w-80 h-auto mb-8 drop-shadow-2xl animate-fade-in"
+        />
+        <h1 className="text-4xl font-bold text-blue-400">Welcome Back to Focusly</h1>
+        <p className="text-gray-300 max-w-md mx-auto text-center mt-4">
+          Access your personalized study dashboard powered by AI-driven learning tools.
+        </p>
       </div>
 
-      {/* Right Side */}
+      {/* Right Side (Form) */}
       <div className="flex flex-1 justify-center items-center bg-[#0B0B14]">
         <div className="w-full max-w-md bg-[#111122] p-10 rounded-2xl shadow-xl border border-[#1E1E2F]">
-          <h2 className="text-3xl font-semibold text-center mb-8">Welcome Back</h2>
+          <h2 className="text-3xl font-semibold text-center mb-8">Log In to Your Account</h2>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="text-sm text-gray-400">Email Address</label>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full mt-2 p-3 bg-[#0D0D18] border border-[#1E1E2F] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <input
+              type="email"
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full mt-2 p-3 bg-[#0D0D18] border border-[#1E1E2F] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
 
-            <div>
-              <label className="text-sm text-gray-400">Password</label>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full mt-2 p-3 bg-[#0D0D18] border border-[#1E1E2F] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full mt-2 p-3 bg-[#0D0D18] border border-[#1E1E2F] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
 
             {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -81,7 +80,7 @@ export default function Login() {
           </form>
 
           <p className="text-center text-gray-400 text-sm mt-6">
-            Don't have an account?{" "}
+            Don’t have an account?{" "}
             <Link to="/register" className="text-blue-500 hover:underline">
               Sign Up
             </Link>

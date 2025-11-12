@@ -17,7 +17,6 @@ export default function Register() {
       setError("");
       const res = await registerUser(name, email, password);
 
-      // ✅ Store token + redirect
       localStorage.setItem("token", res.token);
       navigate("/dashboard");
     } catch (err) {
