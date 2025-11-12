@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import prisma from "./lib/prisma.js";
 import { signToken } from "./lib/jwt.js";
+import usersRouter from "./routes/users.js";
+
 
 dotenv.config();
 
@@ -17,18 +19,15 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(usersRouter);
 
-// ✅ Enable CORS (your frontend is on 5173)
 app.use(
-  cors({
+    cors({
     origin: "http://localhost:5173",
     credentials: true,
   })
 );
 
-// ✅ ALL API ROUTES COME BEFORE FRONTEND ROUTES
-
-// Register
 app.post("/api/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -46,12 +45,11 @@ app.post("/api/register", async (req, res) => {
 
     res.json({ message: "User registered successfully" });
   } catch (err) {
-    console.error("❌ Register error:", err);
+    console.error("Register error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-// Login
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -70,19 +68,16 @@ app.post("/api/login", async (req, res) => {
       user: { id: user.id, name: user.name, email: user.email },
     });
   } catch (err) {
-    console.error("❌ Login error:", err);
+    console.error("Login error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-// ✅ AFTER APIs → serve React app
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-// ✅ LAST — React catch-all route
 app.get("/:path(*)", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
 
-// ✅ Start server
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`✅ Backend running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));

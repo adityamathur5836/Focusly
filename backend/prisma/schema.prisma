@@ -12,8 +12,39 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  password String
+  id         Int           @id @default(autoincrement())
+  name       String
+  email      String        @unique
+  password   String
+  notes      Note[]
+  flashcards Flashcard[]
+  voices     VoiceSession[]
+  createdAt  DateTime      @default(now())
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Flashcard {
+  id        Int      @id @default(autoincrement())
+  question  String
+  answer    String
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model VoiceSession {
+  id        Int      @id @default(autoincrement())
+  title     String
+  summary   String?
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 }
