@@ -14,7 +14,6 @@ Focusly is a desktop-first AI-powered SaaS platform designed to revolutionize le
 - [Usage](#usage)  
 - [API Endpoints](#api-endpoints)  
 - [Contributing](#contributing)  
-- [License](#license)  
 
 ---
 
