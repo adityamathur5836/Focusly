@@ -101,10 +101,4 @@ Contributions are welcome!
 - Fork the repo  
 - Create feature branches  
 - Submit pull requests with clear descriptions  
-- Follow existing code style and comment thoroughly  
-
----
-
-## License
-
-This project is licensed under the MIT License. See LICENSE file for details.
+- Follow existing code style and comment thoroughly 
