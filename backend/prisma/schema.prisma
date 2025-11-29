@@ -1,50 +1,73 @@
-// This is your Prisma schema file
-// Learn more: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider = "prisma-client-js"
-  // output = "../generated/prisma"  // optional — remove or comment out
-}
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 model User {
-  id         Int           @id @default(autoincrement())
-  name       String
-  email      String        @unique
-  password   String
-  notes      Note[]
-  flashcards Flashcard[]
-  voices     VoiceSession[]
-  createdAt  DateTime      @default(now())
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  notes         Note[]
+  flashcardSets FlashcardSet[]
+  conversations Conversation[]
 }
 
 model Note {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   title     String
   content   String
-  createdAt DateTime @default(now())
-  userId    Int
+  tags      String?  // Comma-separated tags
+  userId    String
   user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FlashcardSet {
+  id        String      @id @default(uuid())
+  title     String
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  cards     Flashcard[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 model Flashcard {
-  id        Int      @id @default(autoincrement())
-  question  String
-  answer    String
-  createdAt DateTime @default(now())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  id         String       @id @default(uuid())
+  front      String
+  back       String
+  setId      String
+  set        FlashcardSet @relation(fields: [setId], references: [id])
+  nextReview DateTime?
+  interval   Int          @default(0)
+  easeFactor Float        @default(2.5)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 }
 
-model VoiceSession {
-  id        Int      @id @default(autoincrement())
-  title     String
-  summary   String?
-  createdAt DateTime @default(now())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+model Conversation {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  role           String       // "user" or "assistant"
+  content        String
+  createdAt      DateTime     @default(now())
 }
