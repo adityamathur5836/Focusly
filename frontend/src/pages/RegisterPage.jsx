@@ -60,6 +60,7 @@ const RegisterPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Important for cookies
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,

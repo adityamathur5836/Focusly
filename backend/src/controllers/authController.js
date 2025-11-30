@@ -35,11 +35,21 @@ const registerUser = async (req, res) => {
   });
 
   if (user) {
+    const token = generateToken(user.id);
+    
+    // Set HTTP-only cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+    
     res.status(201).json({
       id: user.id,
       name: user.name,
       email: user.email,
-      token: generateToken(user.id),
+      token: token // Also send in response for now (can remove later)
     });
   } else {
     res.status(400).json({ message: 'Invalid user data' });
@@ -58,11 +68,21 @@ const loginUser = async (req, res) => {
   });
 
   if (user && (await bcrypt.compare(password, user.password))) {
+    const token = generateToken(user.id);
+    
+    // Set HTTP-only cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+    
     res.json({
       id: user.id,
       name: user.name,
       email: user.email,
-      token: generateToken(user.id),
+      token: token // Also send in response for now
     });
   } else {
     res.status(400).json({ message: 'Invalid credentials' });
@@ -76,8 +96,20 @@ const getMe = async (req, res) => {
   res.status(200).json(req.user);
 };
 
+// @desc    Logout user
+// @route   POST /api/auth/logout
+// @access  Public
+const logout = async (req, res) => {
+  res.cookie('token', '', {
+    httpOnly: true,
+    expires: new Date(0)
+  });
+  res.json({ message: 'Logged out successfully' });
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getMe,
+  logout,
 };

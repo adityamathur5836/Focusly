@@ -32,6 +32,7 @@ const LoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Important for cookies
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,

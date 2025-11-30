@@ -2,14 +2,21 @@ const express = require('express');
 const router = express.Router();
 const {
   getFlashcardSets,
+  getFlashcardSet,
   createFlashcardSet,
+  updateFlashcardSet,
+  getDueCards,
   addCardToSet,
   deleteFlashcardSet,
 } = require('../controllers/flashcardController');
 const { protect } = require('../middleware/authMiddleware');
 
-router.route('/').get(protect, getFlashcardSets).post(protect, createFlashcardSet);
-router.route('/:id').delete(protect, deleteFlashcardSet);
-router.route('/:setId/cards').post(protect, addCardToSet);
+router.get('/', protect, getFlashcardSets);
+router.get('/due', protect, getDueCards);
+router.get('/:id', protect, getFlashcardSet);
+router.post('/', protect, createFlashcardSet);
+router.put('/:id', protect, updateFlashcardSet);
+router.delete('/:id', protect, deleteFlashcardSet);
+router.post('/:setId/cards', protect, addCardToSet);
 
 module.exports = router;

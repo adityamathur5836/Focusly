@@ -6,6 +6,33 @@ const getNotes = async (req, res) => {
   });
   res.status(200).json(notes);
 };
+
+const getNote = async (req, res) => {
+  const { id } = req.params;
+
+  const note = await prisma.note.findUnique({
+    where: { id },
+  });
+
+  if (!note) {
+    return res.status(404).json({ message: 'Note not found' });
+  }
+
+  if (note.userId !== req.user.id) {
+    return res.status(401).json({ message: 'User not authorized' });
+  }
+
+  res.status(200).json(note);
+};
+
+const getRecentNotes = async (req, res) => {
+  const notes = await prisma.note.findMany({
+    where: { userId: req.user.id },
+    orderBy: { createdAt: 'desc' },
+    take: 5,
+  });
+  res.status(200).json(notes);
+};
 const createNote = async (req, res) => {
   const { title, content, tags } = req.body;
 
@@ -74,6 +101,8 @@ const deleteNote = async (req, res) => {
 
 module.exports = {
   getNotes,
+  getNote,
+  getRecentNotes,
   createNote,
   updateNote,
   deleteNote,

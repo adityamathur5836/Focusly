@@ -1,21 +1,61 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Book, Clock, Trophy, MoreVertical, Search, Zap } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Plus, Book, Clock, Trophy, MoreVertical, Search, Zap, LogOut } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 
 const DashboardPage = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost:5001/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      
+      // Clear any local storage
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      
+      // Redirect to landing page
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/dashboard" className="flex items-center gap-2">
               <div className="bg-indigo-600 p-1.5 rounded-lg">
                 <Zap className="h-5 w-5 text-white" />
               </div>
               <span className="text-xl font-bold text-gray-900">Focusly</span>
             </Link>
+            <nav className="hidden md:flex items-center gap-1">
+              <Link
+                to="/dashboard"
+                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/notes"
+                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Notes
+              </Link>
+              <Link
+                to="/flashcards"
+                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Flashcards
+              </Link>
+            </nav>
             <div className="hidden md:flex items-center relative">
               <Search className="absolute left-3 h-4 w-4 text-gray-400" />
               <input
@@ -26,10 +66,20 @@ const DashboardPage = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="primary" className="hidden sm:flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              New Note
-            </Button>
+            <Link to="/notes/new">
+              <Button variant="primary" className="hidden sm:flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                New Note
+              </Button>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Logout"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
             <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
               JD
             </div>

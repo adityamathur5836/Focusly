@@ -32,6 +32,111 @@ const createFlashcardSet = async (req, res) => {
   res.status(201).json(set);
 };
 
+// @desc    Get single flashcard set
+// @route   GET /api/flashcards/:id
+// @access  Private
+const getFlashcardSet = async (req, res) => {
+  const { id } = req.params;
+
+  const set = await prisma.flashcardSet.findUnique({
+    where: { id },
+    include: { cards: true },
+  });
+
+  if (!set) {
+    return res.status(404).json({ message: 'Set not found' });
+  }
+
+  if (set.userId !== req.user.id) {
+    return res.status(401).json({ message: 'User not authorized' });
+  }
+
+  res.status(200).json(set);
+};
+
+// @desc    Update flashcard set
+// @route   PUT /api/flashcards/:id
+// @access  Private
+const updateFlashcardSet = async (req, res) => {
+  const { id } = req.params;
+  const { title, cards } = req.body;
+
+  const set = await prisma.flashcardSet.findUnique({
+    where: { id },
+    include: { cards: true },
+  });
+
+  if (!set) {
+    return res.status(404).json({ message: 'Set not found' });
+  }
+
+  if (set.userId !== req.user.id) {
+    return res.status(401).json({ message: 'User not authorized' });
+  }
+
+  // Update set title
+  const updatedSet = await prisma.flashcardSet.update({
+    where: { id },
+    data: { title },
+  });
+
+  // If cards are provided, update them
+  if (cards && Array.isArray(cards)) {
+    // Delete existing cards
+    await prisma.flashcard.deleteMany({
+      where: { setId: id },
+    });
+
+    // Create new cards
+    if (cards.length > 0) {
+      await prisma.flashcard.createMany({
+        data: cards.map(card => ({
+          front: card.front,
+          back: card.back,
+          setId: id,
+        })),
+      });
+    }
+  }
+
+  // Fetch updated set with cards
+  const finalSet = await prisma.flashcardSet.findUnique({
+    where: { id },
+    include: { cards: true },
+  });
+
+  res.status(200).json(finalSet);
+};
+
+// @desc    Get cards due for review
+// @route   GET /api/flashcards/due
+// @access  Private
+const getDueCards = async (req, res) => {
+  const now = new Date();
+  
+  const dueCards = await prisma.flashcard.findMany({
+    where: {
+      set: {
+        userId: req.user.id,
+      },
+      OR: [
+        { nextReview: null },
+        { nextReview: { lte: now } },
+      ],
+    },
+    include: {
+      set: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+    },
+  });
+
+  res.status(200).json(dueCards);
+};
+
 // @desc    Add card to set
 // @route   POST /api/flashcards/:setId/cards
 // @access  Private
@@ -93,7 +198,10 @@ const deleteFlashcardSet = async (req, res) => {
 
 module.exports = {
   getFlashcardSets,
+  getFlashcardSet,
   createFlashcardSet,
+  updateFlashcardSet,
+  getDueCards,
   addCardToSet,
   deleteFlashcardSet,
 };
