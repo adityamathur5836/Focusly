@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Edit, BookOpen, Calendar, Layers, Zap } from 'lucide-react';
+import { Plus, Trash2, Edit, BookOpen, Calendar, Layers, Zap, Menu, X } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 
 const FlashcardsPage = () => {
   const [sets, setSets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -69,33 +70,72 @@ const FlashcardsPage = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className='flex justify-between items-center mb-8'>
-        <div className="flex items-center gap-8">
-            <Link to="/dashboard" className="flex items-center gap-2">
-              <div className="bg-indigo-600 p-1.5 rounded-lg">
-                <Zap className="h-5 w-5 text-white" />
+          <div className="flex flex-col w-full md:w-auto md:flex-row md:items-center gap-4">
+            <div className="flex items-center justify-between w-full md:w-auto">
+              <div className="flex items-center gap-8">
+                <Link to="/dashboard" className="flex items-center gap-2">
+                  <div className="bg-indigo-600 p-1.5 rounded-lg">
+                    <Zap className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-xl font-bold text-gray-900">Focusly</span>
+                </Link>
+                <nav className="hidden md:flex items-center gap-1">
+                  <Link
+                    to="/dashboard"
+                    className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/notes"
+                    className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    Notes
+                  </Link>
+                  <Link
+                    to="/flashcards"
+                    className="px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg"
+                  >
+                    Flashcards
+                  </Link>
+                </nav>
               </div>
-              <span className="text-xl font-bold text-gray-900">Focusly</span>
-            </Link>
-            <nav className="hidden md:flex items-center gap-1">
-              <Link
-                to="/dashboard"
-                className="px-3 py-2 text-sm font-medium text-gray-700  rounded-lg"
+
+              {/* Mobile Menu Button */}
+              <button
+                className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                Dashboard
-              </Link>
-              <Link
-                to="/notes"
-                className="px-3 py-2 text-sm font-medium text-gray-700  hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                Notes
-              </Link>
-              <Link
-                to="/flashcards"
-                className="px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                Flashcards
-              </Link>
-            </nav>
+                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+            </div>
+
+            {/* Mobile Menu Dropdown */}
+            {isMobileMenuOpen && (
+              <div className="md:hidden w-full bg-white rounded-lg shadow-lg border border-gray-200 p-2 flex flex-col gap-1 mb-4">
+                <Link
+                  to="/dashboard"
+                  className="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/notes"
+                  className="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Notes
+                </Link>
+                <Link
+                  to="/flashcards"
+                  className="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Flashcards
+                </Link>
+              </div>
+            )}
           </div>
         <div className="flex justify-between items-center mb-8">
           <Link to="/flashcards/new">

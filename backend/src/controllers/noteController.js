@@ -34,22 +34,39 @@ const getRecentNotes = async (req, res) => {
   res.status(200).json(notes);
 };
 const createNote = async (req, res) => {
-  const { title, content, tags } = req.body;
+  try {
+    const { title, content, tags } = req.body;
 
-  if (!title || !content) {
-    return res.status(400).json({ message: 'Please add title and content' });
+    if (!title || !content) {
+      return res.status(400).json({ message: 'Please add title and content' });
+    }
+
+    console.log('Creating note - User ID:', req.user.id);
+    console.log('Title:', title);
+
+    const note = await prisma.note.create({
+      data: {
+        title,
+        content,
+        tags,
+        userId: req.user.id,
+      },
+    });
+
+    console.log('Note created successfully:', {
+      id: note.id,
+      title: note.title,
+      userId: note.userId
+    });
+
+    res.status(201).json(note);
+  } catch (error) {
+    console.error('Error creating note:', error);
+    res.status(500).json({ 
+      message: 'Failed to create note', 
+      error: error.message 
+    });
   }
-
-  const note = await prisma.note.create({
-    data: {
-      title,
-      content,
-      tags,
-      userId: req.user.id,
-    },
-  });
-
-  res.status(201).json(note);
 };
 const updateNote = async (req, res) => {
   const { id } = req.params;

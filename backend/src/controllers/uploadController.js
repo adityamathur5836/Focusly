@@ -181,6 +181,11 @@ const uploadAndGenerateNotes = async (req, res) => {
     const titleMatch = generatedContent.match(/^#\s*(.+)$/m) || generatedContent.match(/^(.+)$/m);
     const title = titleMatch ? titleMatch[1].replace(/^#+\s*/, '').trim() : `Notes from ${req.file.originalname}`;
 
+    console.log('Creating note in database...');
+    console.log('User ID:', req.user.id);
+    console.log('Title:', title);
+    console.log('Content length:', generatedContent.length);
+
     const note = await prisma.note.create({
       data: {
         title,
@@ -188,6 +193,13 @@ const uploadAndGenerateNotes = async (req, res) => {
         tags: `ai-generated,${mode}`,
         userId: req.user.id,
       },
+    });
+
+    console.log('Note created successfully:', {
+      id: note.id,
+      title: note.title,
+      userId: note.userId,
+      createdAt: note.createdAt
     });
 
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);

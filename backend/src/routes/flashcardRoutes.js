@@ -8,6 +8,7 @@ const {
   getDueCards,
   addCardToSet,
   deleteFlashcardSet,
+  deleteCard,
 } = require('../controllers/flashcardController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -18,5 +19,6 @@ router.post('/', protect, createFlashcardSet);
 router.put('/:id', protect, updateFlashcardSet);
 router.delete('/:id', protect, deleteFlashcardSet);
 router.post('/:setId/cards', protect, addCardToSet);
+router.delete('/:setId/cards/:cardId', protect, deleteCard);
 
 module.exports = router;
