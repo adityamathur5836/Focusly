@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Search, Trash2, Edit, Calendar } from 'lucide-react';
+import { Plus, Search, Trash2, Edit, Calendar, MessageCircle, Zap } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 
@@ -70,9 +70,33 @@ const NotesPage = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Notes</h1>
-            <p className="text-gray-600 mt-1">{notes.length} total notes</p>
+          <div className="flex items-center gap-8">
+            <Link to="/dashboard" className="flex items-center gap-2">
+              <div className="bg-indigo-600 p-1.5 rounded-lg">
+                <Zap className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-gray-900">Focusly</span>
+            </Link>
+            <nav className="hidden md:flex items-center gap-1">
+              <Link
+                to="/dashboard"
+                className="px-3 py-2 text-sm font-medium text-gray-700  rounded-lg"
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/notes"
+                className="px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Notes
+              </Link>
+              <Link
+                to="/flashcards"
+                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Flashcards
+              </Link>
+            </nav>
           </div>
           <Link to="/notes/new">
             <Button className="flex items-center gap-2">
@@ -131,6 +155,13 @@ const NotesPage = () => {
                     </div>
                   </div>
                   <div className="flex gap-2 ml-4">
+                    <button
+                      onClick={() => navigate(`/chat/${note.id}`)}
+                      className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                      title="Chat with PDF"
+                    >
+                      <MessageCircle className="h-5 w-5" />
+                    </button>
                     <button
                       onClick={() => navigate(`/notes/${note.id}/edit`)}
                       className="p-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"

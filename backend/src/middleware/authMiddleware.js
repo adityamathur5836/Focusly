@@ -4,7 +4,6 @@ const prisma = require('../utils/prisma');
 const protect = async (req, res, next) => {
   let token;
 
-  // Check for token in cookies first, then fall back to Authorization header
   if (req.cookies.token) {
     token = req.cookies.token;
   } else if (

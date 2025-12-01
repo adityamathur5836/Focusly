@@ -9,7 +9,6 @@ const VoiceRecorder = ({ onTranscriptChange }) => {
   const [isSupported, setIsSupported] = useState(true);
 
   useEffect(() => {
-    // Check if browser supports Web Speech API
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {

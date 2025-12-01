@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Book, Clock, Trophy, MoreVertical, Search, Zap, LogOut } from 'lucide-react';
+import { Zap, LogOut, Sparkles, Brain, TrendingUp, BookOpen, Layers, Target } from 'lucide-react';
 import Button from '../components/ui/Button';
-import Card from '../components/ui/Card';
+import FileUpload from '../components/FileUpload';
+import FeatureCard from '../components/FeatureCard';
+import FAQItem from '../components/FAQItem';
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -14,16 +16,73 @@ const DashboardPage = () => {
         credentials: 'include',
       });
       
-      // Clear any local storage
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       
-      // Redirect to landing page
       navigate('/');
     } catch (error) {
       console.error('Logout error:', error);
     }
   };
+
+  const handleUploadSuccess = (data) => {
+    if (data.note) {
+      navigate('/notes');
+    } else if (data.set) {
+      navigate('/flashcards');
+    }
+  };
+
+  const features = [
+    {
+      icon: Sparkles,
+      title: 'Flashcards & Quizzes & Exams',
+      description: 'Flashcards, quizzes, and exams are automatically created from your notes and study materials.',
+      iconBgColor: 'bg-purple-100',
+      iconColor: 'text-purple-600'
+    },
+    {
+      icon: Brain,
+      title: 'Get help & Summaries',
+      description: 'Get instant help on any topic. AI will summarize your notes and answer your questions.',
+      iconBgColor: 'bg-pink-100',
+      iconColor: 'text-pink-600'
+    },
+    {
+      icon: Target,
+      title: 'Study with your friends',
+      description: 'Invite others so you can collaborate on study materials and share your progress.',
+      iconBgColor: 'bg-blue-100',
+      iconColor: 'text-blue-600'
+    }
+  ];
+
+  const faqs = [
+    {
+      question: 'What is Focusly AI?',
+      answer: 'Focusly AI is an intelligent study platform that uses artificial intelligence to help you create notes, flashcards, and study materials from your documents. It leverages advanced AI to summarize content, generate questions, and help you learn more effectively.'
+    },
+    {
+      question: 'What are Focusly AI\'s different tools? What can I study with?',
+      answer: 'Focusly offers multiple AI-powered tools including: automatic note generation from PDFs and documents, AI-generated flashcards for spaced repetition learning, intelligent summaries of complex topics, and personalized study recommendations based on your learning patterns.'
+    },
+    {
+      question: 'What happens if I don\'t have a Focusly AI subscription?',
+      answer: 'You can still use Focusly with limited features. Free users can create notes manually, upload a limited number of documents per month, and access basic flashcard functionality. Premium features like unlimited AI generation and advanced analytics require a subscription.'
+    },
+    {
+      question: 'What AI sources/references are available in Focusly AI?',
+      answer: 'Focusly uses Google\'s Gemini AI, one of the most advanced language models available. The AI is trained on a vast corpus of educational materials and can understand and process content across multiple subjects and languages.'
+    },
+    {
+      question: 'How can I best upload documents to Focusly AI?',
+      answer: 'For best results, upload text-based PDFs or TXT files with clear, readable content. Focusly now supports scanned PDFs and image-based documents using OCR (Optical Character Recognition), though processing may take 10-30 seconds. For optimal OCR results, ensure scanned documents have clear, high-contrast text. Avoid encrypted PDFs or corrupted files. Files should contain at least 50 characters of text and be under 10MB in size.'
+    },
+    {
+      question: 'How was Focusly AI built using responsible AI?',
+      answer: 'Focusly is built with responsible AI principles in mind. We prioritize user privacy, don\'t train our models on your personal documents, and implement safeguards to ensure accurate and helpful content generation. We\'re committed to transparency and ethical AI use.'
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -39,7 +98,7 @@ const DashboardPage = () => {
             <nav className="hidden md:flex items-center gap-1">
               <Link
                 to="/dashboard"
-                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg"
               >
                 Dashboard
               </Link>
@@ -56,22 +115,8 @@ const DashboardPage = () => {
                 Flashcards
               </Link>
             </nav>
-            <div className="hidden md:flex items-center relative">
-              <Search className="absolute left-3 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search notes, flashcards..."
-                className="pl-10 pr-4 py-2 bg-gray-100 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 w-64 text-sm"
-              />
-            </div>
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/notes/new">
-              <Button variant="primary" className="hidden sm:flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                New Note
-              </Button>
-            </Link>
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
@@ -80,135 +125,109 @@ const DashboardPage = () => {
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">Logout</span>
             </button>
-            <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
-              JD
-            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Welcome back, John! 👋</h1>
-          <p className="text-gray-600">You're on a 3-day streak. Keep it up!</p>
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+            Hey, studying starts with <span className="text-indigo-600">Focusly AI</span>
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Upload your notes, PDFs, or scanned documents and let AI create study materials for you
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="p-4 flex items-center gap-4">
-            <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Clock className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Study Time</p>
-              <p className="text-xl font-bold text-gray-900">12.5 hrs</p>
-            </div>
-          </Card>
-          <Card className="p-4 flex items-center gap-4">
-            <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Book className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Notes Created</p>
-              <p className="text-xl font-bold text-gray-900">24</p>
-            </div>
-          </Card>
-          <Card className="p-4 flex items-center gap-4">
-            <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Trophy className="h-6 w-6 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Cards Mastered</p>
-              <p className="text-xl font-bold text-gray-900">156</p>
-            </div>
-          </Card>
-          <Card className="p-4 flex items-center gap-4 bg-gradient-to-r from-indigo-500 to-violet-600 text-white">
-            <div className="h-12 w-12 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-              <Zap className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-indigo-100">Daily Goal</p>
-              <p className="text-xl font-bold">85%</p>
-            </div>
-          </Card>
+        <div className="mb-16">
+          <FileUpload onSuccess={handleUploadSuccess} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">Recent Notes</h2>
-              <Link to="/notes" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">View all</Link>
+        <div className="mb-20">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-3">
+            Ace your studies with Focusly AI
+          </h2>
+          <p className="text-center text-gray-600 mb-10">
+            We built a super smart AI tool to help you study and help you study
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <FeatureCard key={index} {...feature} />
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-20">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-3">
+            Record and transcribe your class on the go
+          </h2>
+          <p className="text-center text-gray-600 mb-10">
+            Stay focused in class, your focus will be your ally after the class ends
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 flex items-center justify-center min-h-[300px]">
+              <div className="text-center">
+                <BookOpen className="h-16 w-16 text-purple-600 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Focus first, notes later
+                </h3>
+                <p className="text-gray-600">
+                  Record lectures and let AI create comprehensive notes
+                </p>
+              </div>
             </div>
-            <div className="grid gap-4">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer group">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors">
-                        Introduction to Molecular Biology
-                      </h3>
-                      <p className="text-sm text-gray-500 line-clamp-2">
-                        DNA replication is the biological process of producing two identical replicas of DNA from one original DNA molecule.
-                      </p>
-                    </div>
-                    <button className="text-gray-400 hover:text-gray-600">
-                      <MoreVertical className="h-5 w-5" />
-                    </button>
-                  </div>
-                  <div className="mt-4 flex items-center gap-2 text-xs text-gray-400">
-                    <span className="bg-gray-100 px-2 py-1 rounded">Biology</span>
-                    <span>•</span>
-                    <span>2 hours ago</span>
-                  </div>
-                </Card>
-              ))}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 flex items-center justify-center min-h-[300px]">
+              <div className="text-center">
+                <Layers className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Playback your classes
+                </h3>
+                <p className="text-gray-600">
+                  Review and study at your own pace with AI assistance
+                </p>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div className="space-y-8">
-            <Card className="p-6 bg-gradient-to-br from-indigo-900 to-violet-900 text-white">
-              <h3 className="font-bold text-lg mb-2">AI Tutor</h3>
-              <p className="text-indigo-200 text-sm mb-4">
-                Need help understanding a topic? Ask your personal AI tutor.
-              </p>
-              <Button className="w-full bg-blue text-indigo-900 hover:bg-indigo-50">
-                Start Chatting
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-10">
+            Frequently Asked Questions
+          </h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            {faqs.map((faq, index) => (
+              <FAQItem key={index} {...faq} />
+            ))}
+          </div>
+        </div>
+
+        <div className="text-center py-12">
+          <p className="text-gray-600 mb-6">
+            Ready to transform your studying experience?
+          </p>
+          <div className="flex gap-4 justify-center">
+            <Link to="/notes/new">
+              <Button variant="primary" className="px-8">
+                Create Your First Note
               </Button>
-            </Card>
-
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-gray-900">Due for Review</h2>
-              </div>
-              <Card className="p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                      <Book className="h-5 w-5 text-orange-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">History 101</p>
-                      <p className="text-xs text-gray-500">24 cards due</p>
-                    </div>
-                  </div>
-                  <Button size="sm" variant="secondary" className="text-xs">Review</Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Book className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Chemistry</p>
-                      <p className="text-xs text-gray-500">12 cards due</p>
-                    </div>
-                  </div>
-                  <Button size="sm" variant="secondary" className="text-xs">Review</Button>
-                </div>
-              </Card>
-            </div>
+            </Link>
+            <Link to="/notes">
+              <Button variant="secondary" className="px-8">
+                View All Notes
+              </Button>
+            </Link>
           </div>
         </div>
       </main>
+
+      <footer className="bg-white border-t border-gray-200 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+          <p>© 2024 Focusly. All rights reserved.</p>
+          <p className="mt-2">
+            Powered by AI • Built for Students
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

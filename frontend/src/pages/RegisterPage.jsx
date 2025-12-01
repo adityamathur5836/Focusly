@@ -60,7 +60,7 @@ const RegisterPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Important for cookies
+        credentials: 'include',
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
@@ -71,7 +71,6 @@ const RegisterPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Store the token in localStorage
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify({
           id: data.id,
@@ -82,7 +81,6 @@ const RegisterPage = () => {
         console.log('Registration successful:', data);
         alert('Registration successful! Welcome to Focusly!');
         
-        // Redirect to dashboard or home page
         window.location.href = '/';
       } else {
         setErrors({ email: data.message || 'Registration failed' });

@@ -5,25 +5,39 @@ const cookieParser = require('cookie-parser');
 const authRoutes = require('./src/routes/authRoutes');
 const noteRoutes = require('./src/routes/noteRoutes');
 const flashcardRoutes = require('./src/routes/flashcardRoutes');
+const uploadRoutes = require('./src/routes/uploadRoutes');
+const userRoutes = require('./src/routes/userRoutes');
+const chatRoutes = require('./src/routes/chatRoutes');
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// CORS configuration to allow credentials
 app.use(cors({
-  origin: 'http://localhost:5173', // Vite default port
+  origin: 'http://localhost:5173',
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/flashcards', flashcardRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.get('/', (req, res) => {
   res.send('Focusly API is running');
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    geminiApiKeyConfigured: !!process.env.GEMINI_API,
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.post('/api/auth/login', async (req, res) => {
@@ -47,8 +61,30 @@ app.post('/api/auth/login', async (req, res) => {
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-  
 
+
+});
+
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+
+  if (err.name === 'MulterError') {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        message: 'File is too large. Maximum file size is 50MB.',
+        error: 'FILE_TOO_LARGE'
+      });
+    }
+    return res.status(400).json({
+      message: err.message,
+      error: err.code
+    });
+  }
+
+  res.status(err.status || 500).json({
+    message: err.message || 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err : {}
+  });
 });
 
 app.listen(PORT, () => {

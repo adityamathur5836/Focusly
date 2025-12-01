@@ -23,10 +23,11 @@ model User {
 model Note {
   id        String   @id @default(uuid())
   title     String
-  content   String
-  tags      String?  // Comma-separated tags
+  content   String   @db.Text
+  tags      String?
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+  conversations Conversation[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -43,8 +44,8 @@ model FlashcardSet {
 
 model Flashcard {
   id         String       @id @default(uuid())
-  front      String
-  back       String
+  front      String       @db.Text
+  back       String       @db.Text
   setId      String
   set        FlashcardSet @relation(fields: [setId], references: [id])
   nextReview DateTime?
@@ -56,8 +57,11 @@ model Flashcard {
 
 model Conversation {
   id        String    @id @default(uuid())
+  title     String    @default("New Chat")
   userId    String
   user      User      @relation(fields: [userId], references: [id])
+  noteId    String?
+  note      Note?     @relation(fields: [noteId], references: [id])
   messages  Message[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -67,7 +71,7 @@ model Message {
   id             String       @id @default(uuid())
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id])
-  role           String       // "user" or "assistant"
-  content        String
+  role           String
+  content        String       @db.Text
   createdAt      DateTime     @default(now())
 }
