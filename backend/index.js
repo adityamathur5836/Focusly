@@ -57,9 +57,17 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
+  const hasDbUrl = !!process.env.DATABASE_URL;
+  const dbUrlSet = hasDbUrl ? 'Set' : 'NOT SET';
+  const dbUrlPreview = hasDbUrl 
+    ? process.env.DATABASE_URL.replace(/\/\/[^:]+:[^@]+@/, '//***:***@')
+    : 'Missing';
+  
   res.json({
     status: 'ok',
     geminiApiKeyConfigured: !!process.env.GEMINI_API,
+    databaseUrl: dbUrlPreview,
+    databaseUrlStatus: dbUrlSet,
     timestamp: new Date().toISOString()
   });
 });
