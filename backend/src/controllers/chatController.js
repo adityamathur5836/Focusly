@@ -1,5 +1,6 @@
 const prisma = require('../utils/prisma');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const handleDbError = require('../utils/handleDbError');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
 
@@ -38,6 +39,9 @@ const startChatSession = async (req, res) => {
             conversation
         });
     } catch (error) {
+        if (error.message && error.message.includes('authentication failed')) {
+            return handleDbError(error, res, 'Failed to start chat session');
+        }
         console.error('Error starting chat session:', error);
         res.status(500).json({
             message: 'Failed to start chat session',

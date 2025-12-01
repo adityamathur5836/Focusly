@@ -4,6 +4,7 @@ const fs = require('fs');
 const pdf = require('pdf-parse');
 const prisma = require('../utils/prisma');
 const { generateDetailedNotes, generateQuickNotes, generateFlashcards } = require('../utils/aiService');
+const handleDbError = require('../utils/handleDbError');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -215,6 +216,9 @@ const uploadAndGenerateNotes = async (req, res) => {
       fs.unlinkSync(req.file.path);
     }
 
+    if (error.message && error.message.includes('authentication failed')) {
+      return handleDbError(error, res, 'Failed to process file and generate notes');
+    }
     res.status(500).json({
       message: 'Failed to process file and generate notes',
       error: error.message
@@ -334,6 +338,9 @@ const uploadAndGenerateFlashcards = async (req, res) => {
       fs.unlinkSync(req.file.path);
     }
 
+    if (error.message && error.message.includes('authentication failed')) {
+      return handleDbError(error, res, 'Failed to process file and generate flashcards');
+    }
     res.status(500).json({
       message: 'Failed to process file and generate flashcards',
       error: error.message

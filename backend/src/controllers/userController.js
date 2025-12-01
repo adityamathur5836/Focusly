@@ -1,5 +1,6 @@
 const prisma = require('../utils/prisma');
 const bcrypt = require('bcryptjs');
+const handleDbError = require('../utils/handleDbError');
 
 const getProfile = async (req, res) => {
   try {
@@ -15,7 +16,16 @@ const getProfile = async (req, res) => {
     res.json(user);
   } catch (error) {
     console.error('Error fetching profile:', error);
-    res.status(500).json({ message: 'Failed to fetch profile' });
+    if (error.message && error.message.includes('authentication failed')) {
+      return res.status(500).json({ 
+        message: 'Database connection error. Please check server configuration.',
+        error: 'DATABASE_AUTH_FAILED'
+      });
+    }
+    res.status(500).json({ 
+      message: 'Failed to fetch profile',
+      error: error.message 
+    });
   }
 };
 
@@ -44,8 +54,7 @@ const updateProfile = async (req, res) => {
 
     res.json(updatedUser);
   } catch (error) {
-    console.error('Error updating profile:', error);
-    res.status(500).json({ message: 'Failed to update profile' });
+    handleDbError(error, res, 'Failed to update profile');
   }
 };
 
@@ -75,8 +84,7 @@ const updatePassword = async (req, res) => {
 
     res.json({ message: 'Password updated successfully' });
   } catch (error) {
-    console.error('Error updating password:', error);
-    res.status(500).json({ message: 'Failed to update password' });
+    handleDbError(error, res, 'Failed to update password');
   }
 };
 

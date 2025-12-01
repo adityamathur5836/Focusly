@@ -20,18 +20,32 @@ const protect = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = await prisma.user.findUnique({
-      where: { id: decoded.id },
-      select: { id: true, name: true, email: true },
-    });
+    try {
+      req.user = await prisma.user.findUnique({
+        where: { id: decoded.id },
+        select: { id: true, name: true, email: true },
+      });
 
-    if (!req.user) {
-      return res.status(401).json({ message: 'User not found' });
+      if (!req.user) {
+        return res.status(401).json({ message: 'User not found' });
+      }
+
+      next();
+    } catch (dbError) {
+      console.error('Database error in auth middleware:', dbError);
+      if (dbError.message && dbError.message.includes('authentication failed')) {
+        return res.status(500).json({ 
+          message: 'Database connection error. Please check server configuration.',
+          error: 'DATABASE_AUTH_FAILED'
+        });
+      }
+      return res.status(500).json({ 
+        message: 'Database error',
+        error: dbError.message 
+      });
     }
-
-    next();
   } catch (error) {
-    console.error(error);
+    console.error('JWT verification error:', error);
     res.status(401).json({ message: 'Not authorized, token failed' });
   }
 };
