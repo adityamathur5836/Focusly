@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import LandingPage from '../pages/LandingPage';
+import API_BASE_URL from '../config/api';
 
 const AuthRedirect = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -9,7 +10,7 @@ const AuthRedirect = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/auth/me', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
           credentials: 'include',
         });
 

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Zap, Check, AlertCircle } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import API_BASE_URL from '../config/api';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -55,7 +56,7 @@ const RegisterPage = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/register', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

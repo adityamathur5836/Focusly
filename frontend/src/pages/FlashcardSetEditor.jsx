@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Save, X, Plus, Trash2 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import API_BASE_URL from '../config/api';
 
 const FlashcardSetEditor = () => {
   const { id } = useParams();
@@ -22,7 +23,7 @@ const FlashcardSetEditor = () => {
   const fetchSet = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:5001/api/flashcards/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/flashcards/${id}`, {
         credentials: 'include',
       });
 
@@ -77,8 +78,8 @@ const FlashcardSetEditor = () => {
     setIsSaving(true);
     try {
       const url = isEditing
-        ? `http://localhost:5001/api/flashcards/${id}`
-        : 'http://localhost:5001/api/flashcards';
+        ? `${API_BASE_URL}/api/flashcards/${id}`
+        : `${API_BASE_URL}/api/flashcards`;
 
       const method = isEditing ? 'PUT' : 'POST';
 

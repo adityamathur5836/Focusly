@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, MessageCircle, Zap, LogOut } from 'lucide-react';
 import ChatInterface from '../components/ChatInterface';
 import Button from '../components/ui/Button';
+import API_BASE_URL from '../config/api';
 
 const ChatWithPDFPage = () => {
   const { noteId } = useParams();
@@ -20,7 +21,7 @@ const ChatWithPDFPage = () => {
     try {
       setIsLoading(true);
       
-      const noteResponse = await fetch(`http://localhost:5001/api/notes/${noteId}`, {
+      const noteResponse = await fetch(`${API_BASE_URL}/api/notes/${noteId}`, {
         credentials: 'include'
       });
 
@@ -31,7 +32,7 @@ const ChatWithPDFPage = () => {
       const noteData = await noteResponse.json();
       setNote(noteData.note);
 
-      const chatResponse = await fetch('http://localhost:5001/api/chat/start', {
+      const chatResponse = await fetch(`${API_BASE_URL}/api/chat/start`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -59,7 +60,7 @@ const ChatWithPDFPage = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:5001/api/auth/logout', {
+      await fetch(`${API_BASE_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include'
       });

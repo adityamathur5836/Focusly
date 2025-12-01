@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Search, Trash2, Edit, Calendar, MessageCircle, Zap, Menu, X } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
+import API_BASE_URL from '../config/api';
 
 const NotesPage = () => {
   const [notes, setNotes] = useState([]);
@@ -17,7 +18,7 @@ const NotesPage = () => {
 
   const fetchNotes = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/notes', {
+      const response = await fetch(`${API_BASE_URL}/api/notes`, {
         credentials: 'include',
       });
 
@@ -36,7 +37,7 @@ const NotesPage = () => {
     if (!confirm('Are you sure you want to delete this note?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5001/api/notes/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/notes/${id}`, {
         method: 'DELETE',
         credentials: 'include',
       });

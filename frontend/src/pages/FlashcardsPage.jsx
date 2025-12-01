@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Edit, BookOpen, Calendar, Layers, Zap, Menu, X } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
+import API_BASE_URL from '../config/api';
 
 const FlashcardsPage = () => {
   const [sets, setSets] = useState([]);
@@ -16,7 +17,7 @@ const FlashcardsPage = () => {
 
   const fetchSets = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/flashcards', {
+      const response = await fetch(`${API_BASE_URL}/api/flashcards`, {
         credentials: 'include',
       });
 
@@ -35,7 +36,7 @@ const FlashcardsPage = () => {
     if (!confirm('Are you sure you want to delete this flashcard set?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5001/api/flashcards/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/flashcards/${id}`, {
         method: 'DELETE',
         credentials: 'include',
       });

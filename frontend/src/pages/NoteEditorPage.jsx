@@ -4,6 +4,7 @@ import { Save, X, Mic } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import VoiceRecorder from '../components/VoiceRecorder';
+import API_BASE_URL from '../config/api';
 
 const NoteEditorPage = () => {
   const { id } = useParams();
@@ -27,7 +28,7 @@ const NoteEditorPage = () => {
   const fetchNote = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:5001/api/notes/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/notes/${id}`, {
         credentials: 'include',
       });
 
@@ -73,8 +74,8 @@ const NoteEditorPage = () => {
     setIsSaving(true);
     try {
       const url = isEditing 
-        ? `http://localhost:5001/api/notes/${id}`
-        : 'http://localhost:5001/api/notes';
+        ? `${API_BASE_URL}/api/notes/${id}`
+        : `${API_BASE_URL}/api/notes`;
       
       const method = isEditing ? 'PUT' : 'POST';
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Upload, FileText, Zap, Loader, File } from 'lucide-react';
 import Button from './ui/Button';
 import Card from './ui/Card';
+import API_BASE_URL from '../config/api';
 
 const FileUpload = ({ onSuccess }) => {
   const [file, setFile] = useState(null);
@@ -53,8 +54,8 @@ const FileUpload = ({ onSuccess }) => {
       }
 
       const endpoint = generateType === 'notes' 
-        ? 'http://localhost:5001/api/upload/notes'
-        : 'http://localhost:5001/api/upload/flashcards';
+        ? `${API_BASE_URL}/api/upload/notes`
+        : `${API_BASE_URL}/api/upload/flashcards`;
 
       const response = await fetch(endpoint, {
         method: 'POST',

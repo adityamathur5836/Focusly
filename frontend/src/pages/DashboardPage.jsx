@@ -5,13 +5,14 @@ import Button from '../components/ui/Button';
 import FileUpload from '../components/FileUpload';
 import FeatureCard from '../components/FeatureCard';
 import FAQItem from '../components/FAQItem';
+import API_BASE_URL from '../config/api';
 
 const DashboardPage = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:5001/api/auth/logout', {
+      await fetch(`${API_BASE_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include',
       });

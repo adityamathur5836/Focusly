@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { RotateCw, CheckCircle, Zap, Menu, X } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
+import API_BASE_URL from '../config/api';
 
 const StudySessionPage = () => {
   const { id } = useParams();
@@ -26,7 +27,7 @@ const StudySessionPage = () => {
 
   const fetchSet = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/flashcards/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/flashcards/${id}`, {
         credentials: 'include',
       });
 

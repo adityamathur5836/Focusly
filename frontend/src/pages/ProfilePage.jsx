@@ -3,6 +3,7 @@ import { User, Mail, Lock, Save } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Card from '../components/ui/Card';
+import API_BASE_URL from '../config/api';
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
@@ -23,7 +24,7 @@ const ProfilePage = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/auth/me', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
         credentials: 'include',
       });
 
@@ -56,7 +57,7 @@ const ProfilePage = () => {
     setIsSaving(true);
 
     try {
-      const response = await fetch('http://localhost:5001/api/user/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ const ProfilePage = () => {
     setIsSaving(true);
 
     try {
-      const response = await fetch('http://localhost:5001/api/user/password', {
+      const response = await fetch(`${API_BASE_URL}/api/user/password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

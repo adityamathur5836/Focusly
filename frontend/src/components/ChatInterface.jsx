@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Loader, Bot, User } from 'lucide-react';
 import Button from './ui/Button';
+import API_BASE_URL from '../config/api';
 
 const ChatInterface = ({ conversationId, noteTitle }) => {
   const [messages, setMessages] = useState([]);
@@ -25,7 +26,7 @@ const ChatInterface = ({ conversationId, noteTitle }) => {
 
   const loadMessages = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/chat/${conversationId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/chat/${conversationId}`, {
         credentials: 'include'
       });
 
@@ -56,7 +57,7 @@ const ChatInterface = ({ conversationId, noteTitle }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:5001/api/chat/${conversationId}/message`, {
+      const response = await fetch(`${API_BASE_URL}/api/chat/${conversationId}/message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
