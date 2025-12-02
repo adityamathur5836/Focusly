@@ -12,17 +12,24 @@ const DashboardPage = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${API_BASE_URL}/api/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-      
+      // Clear localStorage first to prevent AuthRedirect from seeing authenticated user
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       
-      navigate('/');
+      // Call logout endpoint (fire and forget)
+      fetch(`${API_BASE_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      }).catch(err => console.error('Logout API call failed:', err));
+      
+      // Navigate to landing page
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
+      // Even if there's an error, clear storage and redirect
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/';
     }
   };
 

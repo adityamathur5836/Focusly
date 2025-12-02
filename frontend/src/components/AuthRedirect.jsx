@@ -11,13 +11,19 @@ const AuthRedirect = () => {
     const checkAuth = async () => {
       try {
         const token = localStorage.getItem('token');
+        
+        // If no token in localStorage, user is definitely not authenticated
+        if (!token) {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
+        
         const headers = {
           'Content-Type': 'application/json',
         };
         
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
+        headers['Authorization'] = `Bearer ${token}`;
 
         const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
           method: 'GET',
@@ -28,10 +34,16 @@ const AuthRedirect = () => {
         if (response.ok) {
           setIsAuthenticated(true);
         } else {
+          // If auth check fails, clear invalid token
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
           setIsAuthenticated(false);
         }
       } catch (error) {
         console.error('Auth check failed:', error);
+        // On error, clear token and mark as not authenticated
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);

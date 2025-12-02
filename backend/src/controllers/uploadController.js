@@ -165,17 +165,44 @@ const uploadAndGenerateNotes = async (req, res) => {
 
     let generatedContent;
     try {
+      console.log('Starting notes generation...');
+      console.log('Text length:', text.length);
+      console.log('Mode:', mode);
+      console.log('GEMINI_API configured:', !!process.env.GEMINI_API);
+      
       if (mode === 'detailed') {
         generatedContent = await generateDetailedNotes(text);
       } else {
         generatedContent = await generateQuickNotes(text);
       }
+      
+      if (!generatedContent || generatedContent.trim().length === 0) {
+        throw new Error('Generated notes content is empty');
+      }
+      
+      console.log(`✓ Generated notes successfully, length: ${generatedContent.length}`);
     } catch (aiError) {
       console.error('AI generation error:', aiError);
+      console.error('Error stack:', aiError.stack);
+      
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to generate notes with AI.';
+      if (aiError.message.includes('API key') || aiError.message.includes('not configured')) {
+        errorMessage = 'Gemini API key is not configured. Please add GEMINI_API to your environment variables.';
+      } else if (aiError.message.includes('quota') || aiError.message.includes('rate limit')) {
+        errorMessage = 'API quota exceeded. Please check your Gemini API usage limits.';
+      } else if (aiError.message.includes('authentication') || aiError.message.includes('unauthorized')) {
+        errorMessage = 'Invalid API key. Please verify your GEMINI_API environment variable is correct.';
+      } else {
+        errorMessage = `Failed to generate notes: ${aiError.message}`;
+      }
+      
       return res.status(500).json({
-        message: 'Failed to generate notes with AI. Please check your API key and try again.',
-        error: aiError.message
+        message: errorMessage,
+        error: aiError.message,
+        details: process.env.NODE_ENV === 'development' ? aiError.stack : undefined
       });
     }
 
@@ -293,13 +320,39 @@ const uploadAndGenerateFlashcards = async (req, res) => {
 
     let cards;
     try {
+      console.log('Starting flashcard generation...');
+      console.log('Text length:', text.length);
+      console.log('GEMINI_API configured:', !!process.env.GEMINI_API);
+      
       cards = await generateFlashcards(text);
+      
+      if (!cards || !Array.isArray(cards)) {
+        throw new Error('Generated flashcards is not a valid array');
+      }
+      
+      console.log(`✓ Generated ${cards.length} flashcards successfully`);
     } catch (aiError) {
       console.error('AI generation error:', aiError);
+      console.error('Error stack:', aiError.stack);
+      
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to generate flashcards with AI.';
+      if (aiError.message.includes('API key') || aiError.message.includes('not configured')) {
+        errorMessage = 'Gemini API key is not configured. Please add GEMINI_API to your environment variables.';
+      } else if (aiError.message.includes('quota') || aiError.message.includes('rate limit')) {
+        errorMessage = 'API quota exceeded. Please check your Gemini API usage limits.';
+      } else if (aiError.message.includes('authentication') || aiError.message.includes('unauthorized')) {
+        errorMessage = 'Invalid API key. Please verify your GEMINI_API environment variable is correct.';
+      } else {
+        errorMessage = `Failed to generate flashcards: ${aiError.message}`;
+      }
+      
       return res.status(500).json({
-        message: 'Failed to generate flashcards with AI. Please check your API key and try again.',
-        error: aiError.message
+        message: errorMessage,
+        error: aiError.message,
+        details: process.env.NODE_ENV === 'development' ? aiError.stack : undefined
       });
     }
 
