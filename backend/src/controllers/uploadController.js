@@ -99,9 +99,12 @@ const extractTextFromTXT = async (filePath) => {
 
 const uploadAndGenerateNotes = async (req, res) => {
   try {
-    if (!process.env.GEMINI_API) {
+    const geminiApiKey = process.env.GEMINI_API;
+    if (!geminiApiKey || geminiApiKey.trim() === '') {
       return res.status(500).json({
-        message: 'Gemini API key not configured. Please add GEMINI_API to your .env file'
+        message: 'Gemini API key is not configured. Please add GEMINI_API environment variable in Render dashboard.',
+        error: 'GEMINI_API_NOT_SET',
+        instructions: 'Go to Render Dashboard → Your Service → Environment → Add GEMINI_API variable with your Google AI Studio API key'
       });
     }
 
@@ -255,9 +258,12 @@ const uploadAndGenerateNotes = async (req, res) => {
 
 const uploadAndGenerateFlashcards = async (req, res) => {
   try {
-    if (!process.env.GEMINI_API) {
+    const geminiApiKey = process.env.GEMINI_API;
+    if (!geminiApiKey || geminiApiKey.trim() === '') {
       return res.status(500).json({
-        message: 'Gemini API key not configured. Please add GEMINI_API to your .env file'
+        message: 'Gemini API key is not configured. Please add GEMINI_API environment variable in Render dashboard.',
+        error: 'GEMINI_API_NOT_SET',
+        instructions: 'Go to Render Dashboard → Your Service → Environment → Add GEMINI_API variable with your Google AI Studio API key'
       });
     }
 

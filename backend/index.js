@@ -81,14 +81,23 @@ app.get('/api/health', async (req, res) => {
     }
   }
   
+  // Check Gemini API key status
+  const geminiApiKey = process.env.GEMINI_API;
+  const geminiConfigured = !!geminiApiKey && geminiApiKey.trim() !== '';
+  const geminiPreview = geminiConfigured 
+    ? `${geminiApiKey.substring(0, 10)}...${geminiApiKey.substring(geminiApiKey.length - 4)}`
+    : 'Not Set';
+  
   res.json({
     status: 'ok',
-    geminiApiKeyConfigured: !!process.env.GEMINI_API,
+    geminiApiKeyConfigured: geminiConfigured,
+    geminiApiKeyPreview: geminiPreview,
     databaseUrl: dbUrlPreview,
     databaseUrlStatus: dbUrlSet,
     databaseConnected: dbConnected,
     databaseError: dbError,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    instructions: !geminiConfigured ? 'Add GEMINI_API environment variable in Render dashboard' : undefined
   });
 });
 
