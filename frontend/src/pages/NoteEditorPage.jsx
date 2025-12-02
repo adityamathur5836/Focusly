@@ -28,7 +28,18 @@ const NoteEditorPage = () => {
   const fetchNote = async () => {
     setIsLoading(true);
     try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/notes/${id}`, {
+        method: 'GET',
+        headers,
         credentials: 'include',
       });
 
@@ -79,11 +90,18 @@ const NoteEditorPage = () => {
       
       const method = isEditing ? 'PUT' : 'POST';
 
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         credentials: 'include',
         body: JSON.stringify(formData),
       });

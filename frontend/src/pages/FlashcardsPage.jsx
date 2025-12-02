@@ -17,7 +17,18 @@ const FlashcardsPage = () => {
 
   const fetchSets = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/flashcards`, {
+        method: 'GET',
+        headers,
         credentials: 'include',
       });
 
@@ -36,8 +47,18 @@ const FlashcardsPage = () => {
     if (!confirm('Are you sure you want to delete this flashcard set?')) return;
 
     try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/flashcards/${id}`, {
         method: 'DELETE',
+        headers,
         credentials: 'include',
       });
 

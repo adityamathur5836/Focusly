@@ -15,7 +15,18 @@ const Navbar = () => {
 
   const checkAuth = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+        method: 'GET',
+        headers,
         credentials: 'include',
       });
       setIsAuthenticated(response.ok);

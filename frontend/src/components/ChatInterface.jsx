@@ -26,7 +26,18 @@ const ChatInterface = ({ conversationId, noteTitle }) => {
 
   const loadMessages = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/chat/${conversationId}`, {
+        method: 'GET',
+        headers,
         credentials: 'include'
       });
 
@@ -57,11 +68,18 @@ const ChatInterface = ({ conversationId, noteTitle }) => {
     setIsLoading(true);
 
     try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/chat/${conversationId}/message`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers,
         credentials: 'include',
         body: JSON.stringify({ content: userMessage })
       });

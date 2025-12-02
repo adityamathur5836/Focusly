@@ -23,7 +23,18 @@ const FlashcardSetEditor = () => {
   const fetchSet = async () => {
     setIsLoading(true);
     try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/flashcards/${id}`, {
+        method: 'GET',
+        headers,
         credentials: 'include',
       });
 
@@ -83,11 +94,18 @@ const FlashcardSetEditor = () => {
 
       const method = isEditing ? 'PUT' : 'POST';
 
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         credentials: 'include',
         body: JSON.stringify({
           title,

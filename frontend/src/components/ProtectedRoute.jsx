@@ -9,7 +9,18 @@ const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        const token = localStorage.getItem('token');
+        const headers = {
+          'Content-Type': 'application/json',
+        };
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+          method: 'GET',
+          headers,
           credentials: 'include',
         });
 
@@ -17,6 +28,11 @@ const ProtectedRoute = ({ children }) => {
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);
+          // Clear invalid token
+          if (response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          }
         }
       } catch (error) {
         console.error('Auth check failed:', error);

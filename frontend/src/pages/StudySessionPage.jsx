@@ -27,7 +27,18 @@ const StudySessionPage = () => {
 
   const fetchSet = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/flashcards/${id}`, {
+        method: 'GET',
+        headers,
         credentials: 'include',
       });
 

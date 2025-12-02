@@ -34,13 +34,16 @@ app.use(cors({
       if (origin.startsWith('http://localhost:')) {
         callback(null, true);
       } else {
+        // Log the blocked origin for debugging
+        console.log('CORS blocked origin:', origin);
         callback(new Error('Not allowed by CORS'));
       }
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -56,46 +59,39 @@ app.get('/', (req, res) => {
   res.send('Focusly API is running');
 });
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
   const hasDbUrl = !!process.env.DATABASE_URL;
   const dbUrlSet = hasDbUrl ? 'Set' : 'NOT SET';
   const dbUrlPreview = hasDbUrl 
     ? process.env.DATABASE_URL.replace(/\/\/[^:]+:[^@]+@/, '//***:***@')
     : 'Missing';
   
+  // Test database connection
+  let dbConnected = false;
+  let dbError = null;
+  if (hasDbUrl) {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const testPrisma = new PrismaClient();
+      await testPrisma.$connect();
+      await testPrisma.$disconnect();
+      dbConnected = true;
+    } catch (err) {
+      dbError = err.message;
+    }
+  }
+  
   res.json({
     status: 'ok',
     geminiApiKeyConfigured: !!process.env.GEMINI_API,
     databaseUrl: dbUrlPreview,
     databaseUrlStatus: dbUrlSet,
+    databaseConnected: dbConnected,
+    databaseError: dbError,
     timestamp: new Date().toISOString()
   });
 });
 
-app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required' });
-  }
-
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    return res.status(401).json({ message: 'User not found' });
-  }
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-
-  if (!isPasswordValid) {
-    return res.status(401).json({ message: 'Invalid password' });
-  }
-
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-
-
-});
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);

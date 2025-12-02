@@ -56,20 +56,37 @@ const RegisterPage = () => {
     }
 
     try {
+      const requestBody = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+      };
+
+      console.log('Sending registration request:', {
+        url: `${API_BASE_URL}/api/auth/register`,
+        body: { ...requestBody, password: '***' }, // Don't log password
+      });
+
       const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
+        const textResponse = await response.text();
+        console.error('Raw response:', textResponse);
+        throw new Error('Server returned an invalid response');
+      }
+
+      console.log('Registration response:', { status: response.status, data });
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
@@ -84,11 +101,25 @@ const RegisterPage = () => {
         
         window.location.href = '/';
       } else {
-        setErrors({ email: data.message || 'Registration failed' });
+        // Handle different error types
+        let errorMessage = data.message || 'Registration failed';
+        
+        if (data.details) {
+          // Handle field-specific errors
+          if (data.details.name) errorMessage = data.details.name;
+          else if (data.details.email) errorMessage = data.details.email;
+          else if (data.details.password) errorMessage = data.details.password;
+        }
+        
+        console.error('Registration failed:', { status: response.status, error: data });
+        setErrors({ email: errorMessage });
+        alert(errorMessage);
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setErrors({ email: 'Failed to connect to server. Please try again.' });
+      const errorMessage = 'Failed to connect to server. Please check your internet connection and try again.';
+      setErrors({ email: errorMessage });
+      alert(errorMessage);
     }
   };
 

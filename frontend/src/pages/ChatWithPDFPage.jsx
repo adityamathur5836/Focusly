@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, MessageCircle, Zap, LogOut } from 'lucide-react';
 import ChatInterface from '../components/ChatInterface';
@@ -13,15 +13,22 @@ const ChatWithPDFPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadNoteAndStartSession();
-  }, [noteId]);
-
-  const loadNoteAndStartSession = async () => {
+  const loadNoteAndStartSession = useCallback(async () => {
     try {
       setIsLoading(true);
       
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const noteResponse = await fetch(`${API_BASE_URL}/api/notes/${noteId}`, {
+        method: 'GET',
+        headers,
         credentials: 'include'
       });
 
@@ -32,11 +39,18 @@ const ChatWithPDFPage = () => {
       const noteData = await noteResponse.json();
       setNote(noteData.note);
 
+      // Reuse the same token and headers for the chat request
+      const chatHeaders = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        chatHeaders['Authorization'] = `Bearer ${token}`;
+      }
+
       const chatResponse = await fetch(`${API_BASE_URL}/api/chat/start`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: chatHeaders,
         credentials: 'include',
         body: JSON.stringify({
           noteId: noteId,
@@ -56,7 +70,11 @@ const ChatWithPDFPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [noteId]);
+
+  useEffect(() => {
+    loadNoteAndStartSession();
+  }, [loadNoteAndStartSession]);
 
   const handleLogout = async () => {
     try {

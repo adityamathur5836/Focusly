@@ -18,7 +18,18 @@ const NotesPage = () => {
 
   const fetchNotes = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/notes`, {
+        method: 'GET',
+        headers,
         credentials: 'include',
       });
 
@@ -37,8 +48,18 @@ const NotesPage = () => {
     if (!confirm('Are you sure you want to delete this note?')) return;
 
     try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/notes/${id}`, {
         method: 'DELETE',
+        headers,
         credentials: 'include',
       });
 

@@ -57,8 +57,16 @@ const FileUpload = ({ onSuccess }) => {
         ? `${API_BASE_URL}/api/upload/notes`
         : `${API_BASE_URL}/api/upload/flashcards`;
 
+      const token = localStorage.getItem('token');
+      const headers = {};
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(endpoint, {
         method: 'POST',
+        headers,
         credentials: 'include',
         body: formData,
       });
